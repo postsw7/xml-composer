@@ -31,19 +31,25 @@ type styledString = styledChar[];
 
 
 module.exports = function (styledString) {
-  // WARNING: Do not use string.replace or regex operations.
+
   if (!styledString || !styledString.length) {
     return '<p></p>';
   }
 
   var strings = '<p>';
+
+  // Flags to check previous status of BOLD and ITALIC,
+  // by checking these flags, you are able to check which one was open previously
+  // so it makes a decision whether to add open/close tags by comparing those to current status.
   var isBoldOpen = false;
   var isItalicOpen = false;
 
   for (var i = 0; i < styledString.length; i++) {
+
     var char = styledString[i].char;
     var styleB = styledString[i].style.BOLD;
     var styleI = styledString[i].style.ITALIC;
+
     if (styleB && styleI) {
       if (isBoldOpen && isItalicOpen) {
         strings += char;
@@ -60,6 +66,7 @@ module.exports = function (styledString) {
 
     } else if (!styleB && styleI) {
       if (isBoldOpen && isItalicOpen) {
+        // Cover the case when previously both are true but not exactly know which one was open last.
         if (strings.lastIndexOf('<i>') > strings.lastIndexOf('<b>')) {
           strings += `</i></b><i>${char}`;
         } else {
@@ -84,6 +91,7 @@ module.exports = function (styledString) {
       } else if (!isBoldOpen && !isItalicOpen) {
         strings += `<b>${char}`;
       } else if (isBoldOpen && isItalicOpen) {
+        // Cover the case when previously both are true but not exactly know which one was open last.
         if (strings.lastIndexOf('<b>') > strings.lastIndexOf('<i>')) {
           strings += `</b></i><b>${char}`;
         } else {
@@ -102,6 +110,7 @@ module.exports = function (styledString) {
       } else if (isBoldOpen && !isItalicOpen) {
         strings += `</b>${char}`;
       } else if (isBoldOpen && isItalicOpen) {
+        // Cover the case when previously both are true but not exactly know which one was open last.
         if (strings.lastIndexOf('<b>') > strings.lastIndexOf('<i>')) {
           strings += `</b></i>${char}`;
         } else {
@@ -114,6 +123,7 @@ module.exports = function (styledString) {
 
     }
 
+    // Cover the case of last char.
     if (i === styledString.length - 1) {
       if (isBoldOpen && isItalicOpen) {
         strings += '</i></b>';
@@ -124,5 +134,5 @@ module.exports = function (styledString) {
       }
     }
   }
-  return `${strings}</p>`; // FILL ME
+  return `${strings}</p>`;
 }
