@@ -15,8 +15,5 @@
       "<rootDir>/tests"
     ],
     "testRegex": ".*_spec\\.js$"
-  },
-  "dependencies": {
-    "jest": "^19.0.2"
   }
 }
